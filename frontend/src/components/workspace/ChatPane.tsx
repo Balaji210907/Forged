@@ -10,9 +10,9 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 const MODELS = [
-  { id: "google/gemini-3-flash-preview", name: "Gemini 3 Flash", tag: "Fast" },
-  { id: "google/gemini-3.1-pro-preview", name: "Gemini 3.1 Pro", tag: "Quality" },
-  { id: "openai/gpt-5-mini", name: "GPT-5 mini", tag: "Balanced" },
+  { id: "gpt-4o-mini", name: "GPT-4o Mini", tag: "Fast" },
+  { id: "gpt-4o", name: "GPT-4o", tag: "Balanced" },
+  { id: "gpt-4-turbo", name: "GPT-4 Turbo", tag: "Quality" },
 ];
 
 export function ChatPane({

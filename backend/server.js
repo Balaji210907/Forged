@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { createClient } from '@supabase/supabase-js';
 import { convertToModelMessages, streamText, stepCountIs, tool } from 'ai';
-import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
+import { createOpenAI } from '@ai-sdk/openai';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -13,15 +13,10 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-// Create Lovable AI Gateway provider
-function createLovableAiGatewayProvider(lovableApiKey) {
-  return createOpenAICompatible({
-    name: "lovable",
-    baseURL: "https://ai.gateway.lovable.dev/v1",
-    headers: {
-      "Lovable-API-Key": lovableApiKey,
-      "X-Lovable-AIG-SDK": "vercel-ai-sdk",
-    },
+// Create OpenAI provider
+function createOpenAIProvider(openaiApiKey) {
+  return createOpenAI({
+    apiKey: openaiApiKey,
   });
 }
 
@@ -58,9 +53,9 @@ app.post('/api/generate', async (req, res) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const key = process.env.LOVABLE_API_KEY;
+    const key = process.env.OPENAI_API_KEY;
     if (!key) {
-      return res.status(500).json({ error: 'Missing LOVABLE_API_KEY' });
+      return res.status(500).json({ error: 'Missing OPENAI_API_KEY' });
     }
 
     // Verify caller + get an authenticated Supabase client scoped to that user.
@@ -103,9 +98,9 @@ app.post('/api/generate', async (req, res) => {
     const fileList = (files ?? []).map((f) => `- ${f.path} (${f.content.length} chars)`).join('\n') || '(empty project)';
     const contextSystem = `Current virtual filesystem for project ${projectId}:\n${fileList}\n\nWhen editing, only rewrite files you actually change.`;
 
-    const gateway = createLovableAiGatewayProvider(key);
-    const modelName = model || 'google/gemini-3-flash-preview';
-    const aiModel = gateway(modelName);
+    const openai = createOpenAIProvider(key);
+    const modelName = model || 'gpt-4o-mini';
+    const aiModel = openai(modelName);
 
     const tools = {
       write_file: tool({

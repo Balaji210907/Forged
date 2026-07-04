@@ -9,7 +9,7 @@
     "build": "echo 'No build step required for Node.js backend'"
   },
   "dependencies": {
-    "@ai-sdk/openai-compatible": "1",
+    "@ai-sdk/openai": "^1.0.0",
     "@supabase/supabase-js": "^2.110.0",
     "ai": "5",
     "cors": "^2.8.5",
